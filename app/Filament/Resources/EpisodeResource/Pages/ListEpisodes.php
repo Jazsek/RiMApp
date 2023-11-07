@@ -75,8 +75,8 @@ class ListEpisodes extends ListRecords
         $character = $characterAPI->get(Str::remove('https://rickandmortyapi.com/api/character/', $characterURL));
 
         Character::firstOrCreate(
-            ['name' => $character->name],
             [
+                'name' => $character->name,
                 'status' => $character->status,
                 'species' => $character->species,
                 'type' => $character->type,
