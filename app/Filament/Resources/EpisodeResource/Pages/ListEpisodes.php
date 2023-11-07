@@ -26,7 +26,7 @@ class ListEpisodes extends ListRecords
                 ->color('gray')
                 ->requiresConfirmation()
                 ->modalHeading('Sync episodes and characters with API')
-                ->modalDescription('Attention! The process may take several minutes (estimated time: 5min), as the system checks that you cannot create the same character more than once.')
+                ->modalDescription('Attention! Characters and episodes will be deleted! The process may take several minutes (estimated time: 5min), as the system checks that you cannot create the same character more than once.')
                 ->action(function () {
                     $this->importEpisodesAndCharacters();
                 })
