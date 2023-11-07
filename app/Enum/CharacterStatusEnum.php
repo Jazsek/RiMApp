@@ -1,10 +1,16 @@
 <?php
 namespace App\Enum;
+use Filament\Support\Contracts\HasLabel;
 
 
-enum CharacterStatusEnum:string
+enum CharacterStatusEnum: string implements HasLabel
 {
-    case ALIVE = 'Alive';
-    case DEAD = 'Dead';
-    case UNKNOWN = 'Unknown';
+    case Alive = 'Alive';
+    case Dead = 'Dead';
+    case Unknown = 'Unknown';
+
+    public function getLabel(): ?string
+    {
+        return $this->name;
+    }
 }

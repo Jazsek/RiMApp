@@ -27,11 +27,12 @@ class EpisodeResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('air_date')
-                    ->required(),
+                    ->required()
+                    ->native(false),
                 Forms\Components\TextInput::make('episode')
                     ->required()
                     ->maxLength(255),
-            ]);
+            ])->columns('full');
     }
 
     public static function table(Table $table): Table
@@ -59,6 +60,7 @@ class EpisodeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -66,14 +68,14 @@ class EpisodeResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -81,5 +83,5 @@ class EpisodeResource extends Resource
             'create' => Pages\CreateEpisode::route('/create'),
             'edit' => Pages\EditEpisode::route('/{record}/edit'),
         ];
-    }    
+    }
 }

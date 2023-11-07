@@ -1,11 +1,17 @@
 <?php
 namespace App\Enum;
+use Filament\Support\Contracts\HasLabel;
 
 
-enum CharacterGenderEnum:string
+enum CharacterGenderEnum: string implements HasLabel
 {
-    case FEMALE = 'Female';
-    case MALE = 'Male';
-    case GENDERLESS = 'Genderless';
-    case UNKNOWN = 'Unknown';
+    case Female = 'Female';
+    case Male = 'Male';
+    case Genderless = 'Genderless';
+    case Unknown = 'Unknown';
+
+    public function getLabel(): ?string
+    {
+        return $this->name;
+    }
 }
