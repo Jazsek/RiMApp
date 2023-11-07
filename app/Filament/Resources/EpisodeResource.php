@@ -46,6 +46,8 @@ class EpisodeResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('episode')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('characters_count')->counts('characters')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
