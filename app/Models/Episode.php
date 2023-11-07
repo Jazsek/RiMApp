@@ -17,6 +17,10 @@ class Episode extends Model
         'episode',
     ];
 
+    protected $casts = [
+        'air_date' => 'date',
+    ];
+
     public function characters(): BelongsToMany
     {
         return $this->belongsToMany(Character::class);
