@@ -72,7 +72,7 @@ class EpisodeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CharactersRelationManager::class
         ];
     }
 
