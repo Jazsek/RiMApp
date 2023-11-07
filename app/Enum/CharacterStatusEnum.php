@@ -6,5 +6,5 @@ enum CharacterStatusEnum:string
 {
     case ALIVE = 'Alive';
     case DEAD = 'Dead';
-    case UNKNOWN = 'unknown';
+    case UNKNOWN = 'Unknown';
 }
