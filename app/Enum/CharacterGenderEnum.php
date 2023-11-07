@@ -8,7 +8,7 @@ enum CharacterGenderEnum: string implements HasLabel
     case Female = 'Female';
     case Male = 'Male';
     case Genderless = 'Genderless';
-    case Unknown = 'Unknown';
+    case Unknown = 'unknown';
 
     public function getLabel(): ?string
     {
