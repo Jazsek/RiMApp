@@ -8,8 +8,6 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Enum\CharacterGenderEnum;
 use App\Enum\CharacterStatusEnum;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class CharactersRelationManager extends RelationManager
@@ -46,20 +44,28 @@ class CharactersRelationManager extends RelationManager
                 Tables\Columns\ImageColumn::make('image')
                     ->circular(),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('species')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('gender')
                     ->badge()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options(CharacterStatusEnum::class),
+                Tables\Filters\SelectFilter::make('gender')
+                    ->options(CharacterGenderEnum::class),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
