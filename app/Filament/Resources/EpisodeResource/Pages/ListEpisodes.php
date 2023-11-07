@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\EpisodeResource;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use NickBeen\RickAndMortyPhpApi\Episode as RickAndMortyPhpApiEpisode;
 use NickBeen\RickAndMortyPhpApi\Character as RickAndMortyPhpApiCharacter;
 
@@ -34,6 +35,8 @@ class ListEpisodes extends ListRecords
 
     private function importEpisodesAndCharacters(): void
     {
+        $this->truncateTables();
+
         $episodeAPI = new RickAndMortyPhpApiEpisode;
         $page = 1;
         $lastPage = null;
@@ -57,6 +60,15 @@ class ListEpisodes extends ListRecords
 
             $page++;
         } while($page <= $lastPage);
+    }
+
+    private function truncateTables(): void
+    {
+        DB::table('character_episode')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Character::truncate();
+        Episode::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     private function createEpisodes(object $episodeObj): Model
