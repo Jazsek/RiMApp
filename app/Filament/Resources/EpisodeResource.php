@@ -2,14 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\Episode;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\EpisodeResource\Pages;
 use App\Filament\Resources\EpisodeResource\RelationManagers;
-use App\Models\Episode;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 
 class EpisodeResource extends Resource
 {
@@ -40,14 +42,17 @@ class EpisodeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('air_date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('episode')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('characters_count')->counts('characters')
-                    ->badge(),
+                    ->badge()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -58,7 +63,41 @@ class EpisodeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('air_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('air_date_from')
+                            ->native(false),
+                        Forms\Components\DatePicker::make('air_date_until')
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['air_date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('air_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['air_date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('air_date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['air_date_from'] && !$data['air_date_until']) {
+                            return null;
+                        }
+
+                        if ($data['air_date_from'] && !$data['air_date_until']) {
+                            return 'Air date from: ' . Carbon::parse($data['air_date_from'])->toFormattedDateString();
+                        }
+
+                        if (!$data['air_date_from'] && $data['air_date_until']) {
+                            return 'Air date until: ' . Carbon::parse($data['air_date_until'])->toFormattedDateString();
+                        }
+
+                        if ($data['air_date_from'] && $data['air_date_until']) {
+                            return 'Air date between: ' . Carbon::parse($data['air_date_from'])->toFormattedDateString() . ' and ' . Carbon::parse($data['air_date_until'])->toFormattedDateString();
+                        }
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
