@@ -1,66 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RiMApp
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Az alkalmazás a Laravel legújabb verizójában íródott dockerizálva. Mivel az app filament segítségével írodott, így a rendszerhez tartozik egy admin felület, amin keresztül kezelhetjük a karaktereket, epizódokat, illetve az api szinkronizálást. Az alábbi bekezdések segítenek a konfigurációban, illetve bemutatja a feladat elvégzéhez szükséges időket.
 
-## About Laravel
+## Telepítés és konfigurálás
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   Docker alkalmazás elindítása
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-   Repo pullolása
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    -   Sikeres pullolás után szükséges beállítani a megfelelő környezeti változót. Ehhez célszerű lemásolni a repoban lévő **'.env.example'** elnevezésű fájlt, majd módosítani sima **'.env'**-re.
 
-## Learning Laravel
+-   _(opcionális) Módosítsuk a következő változót a **.env** fájl első sorában erre:_
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```
+APP_NAME=RiMApp
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   Indítsuk el a docker containert. A gyökérkönyvtárban állva adjuk ki az indításhoz szükséges parancsot. (Én a -d parancsal szoktam kiadni, hogy tovább tudjam használni ugyan azt a terminál ablakot)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+./vendor/bin/sail up -d
+```
 
-## Laravel Sponsors
+-   Indítás után lépjünk át a docker termináljába. A lentebb kiemelt parancsokat már ebben a terminálban adjuk ki.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+./vendor/bin/sail bash
+```
 
-### Premium Partners
+-   Telepítsük fel a szükséges packegeket. A lentebbi parancsot az alkalmazás gyökérkönyvtárában állva a terminálban adjuk ki
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```
+composer install
+```
 
-## Contributing
+-   Szintén az alkalmazás gyökérkönyvtárában állva futassuk le a migrációkat. Mivel az admin felület eléréshez szükségünk van egy felhasználóra, így célszerű a migrációkkal együtt az adatbázis seedereket is futtatni. Ez létre fog hozni nekünk egy admin felhasználót.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```php
+/**
+ * A seeder az alábbi adatokkal fogja létrehozni az admin felhasználót
+ *
+ * Name: Admin
+ * Email: admin@example.com
+ * Password: password
+*/
 
-## Code of Conduct
+php artisan migrate --seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+-   (opcionális) Nem muszáj futtatni a migráció során az adatbázis seedet. Az alábbi paranccsal van lehetőségünk külön a terminál ablakba létrehozni egy felhasználót.
 
-## Security Vulnerabilities
+```
+php artisan make:filament-user
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+A [localhost](localhost) url-en keresztül már el is érhetjük az alkalmazást. A root URL azonnal átirányít az admin bejelentkező panelra.
 
-## License
+## Felület és funkciók
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Dashboard
+
+-   Ez csak egy sima felület amit a filamentphp generált automatikusan
+
+### Characters
+
+-   Az összes karakter listája tekinthető itt meg.
+
+### Episodes
+
+-   Az összes epizód listája tekinthető itt meg. Ha egy adott sorra kattintunk a táblázatban, akkor a módosítás oldal töltődik be, ahol alul egy táblázatban megtekinthető a részhez tartozó összes karakter. A táblázat a specifikációnak megfelelően lett beállítva.
+
+## Funkciók
+
+-   Api adatok szinkronizálása. Megjegyzésben látható a fájl elérési útvonala.
+
+```php
+/// app/Filament/Resources/EpisodeResource/Pages/ListEpisodes.php
+private function importEpisodesAndCharacters(): void {}
+```
+
+-   A táblázatok az alábbi függvényben tekinthetőek meg.
+
+```php
+/// app/Filament/Resources/CharacterResource.php
+/// app/Filament/Resources/EpisodeResource.php
+public static function table(Table $table): Table {}
+```
+
+-   Módosításkor látható relációs táblázatokat a getRelations függvény hívja meg. A hozzájuk tartozó fájl megtalálható a resource/RelationManagers mappán belül.
+
+```php
+/// app/Filament/Resources/CharacterResource.php
+/// app/Filament/Resources/EpisodeResource.php
+public static function getRelations(): array {}
+
+// app/Filament/Resources/CharacterResource/RelationManagers/EpisodesRelationManager.php
+class EpisodesRelationManager extends RelationManager {}
+
+// app/Filament/Resources/EpisodeResource/RelationManagers/CharactersRelationManager.php
+class CharactersRelationManager extends RelationManager {}
+```
+
+## Elkészítési folyamat
+
+-   Összesen: **~8-9 óra**
+
+| Folyamatok                                        | Szükséges idő | Megjegyzés                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------- | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| _Tervezés_                                        | ~1 óra        | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Laravel telepítés_                               | ~5 perc       | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Filament telepítés_                              | ~5 perc       | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Modelek és migrációk létrehozása_                | ~1 óra        | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Resource-ok létrehozása_                         | ~5 perc       | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Táblázatok beállítása_                           | ~30 perc      | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Rick and Morty API PHP Client telepítés_         | ~5 perc       | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Api adatok adatbázisba mentése_                  | ~2 óra        | Sajnos itt sok időt veszítettem annak köszönhetően, hogy nem ismertem a sorozatot. Az importálás relatíve gyorsan megvolt, viszont teszteltem az adatokat és feltűnt, hogy néhány karaktert többször is attacholtam egy adott epizódhoz. Furcsa is volt, hogy az összes karakterszámom sem fedte le azt a valóságot, amit a karakter apival kérdeztem le. Végül sikerült megfejteni, hogy a probléma onnan eredt, hogy sok ideig úgy kezeltem a szinkronizálást, hogy a karakterek nevei egyediek. Ezt kezeltem is a karakter létrehozásánál, és mivel már volt ilyen nevű karakter az adatbázisban, így nem hozta létre az appom. Végül nem csak a nevet nézem, hogy van-e megegyező érték az adatbázisban, hanem minden elemét. |
+| _Táblázat rendezése, keresése, szűrése beállítás_ | ~30 perc      | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| _Tesztelés_                                       | ~2 óra        | Manuális tesztelés. Funkciók kipróbálása a specifikációnak megfelelően. Applikáció telepítése másik számítógépre a readme alapján.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| _ReadME írás_                                     | ~1.5 óra      | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+
+## Megjegyzés
+
+Mivel nem volt különösebb kritérum és tiltás, így bátran mertem használni a filamentPhp-t. Amennyiben ez esetleg probléma lenne, akkor bármikor készen állok megvalósítani ezt a projektet a filamentphp nélkül is. Számomra ez a megoldás gyorsabb megvalósítást tett lehetővé. Remélem a tudásom, és a gondolkodásom ebből a verzióból is teljesen jól megállapítható.
+
+Pár szóban azért felvázolnám a gondolatmenetem, ha csak sima laravel verziót használtam volna. A model felépítése ugyan úgy nézne ki, mint a mostani példában. Létrehoznék 1-1 controllert a karakterek és az epizódok számára. Ugyan úgy létrehoznék egy gombot, amin keresztül meg tudom hívni az api kéréseket, és hasonló módon dolgoznám fel az adatokat, mint most. Természetesen a szükséges route-ot beállítanám a web.php fájlban. A létrehozott controller fájlokba írnék egy index függvényt, ami renderelne egy bladet a megfelelő változókkal. A változókat a blade-nek a compact függvény segítségével küldeném tovább. A szükséges változót a with függvénnyel együtt kérném le, hogy elkerüljem az n+1 problámát.
