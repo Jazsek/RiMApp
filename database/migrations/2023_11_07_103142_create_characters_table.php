@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('characters', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('status', ['Alive','Dead','Unknown']);
+            $table->string('status');
             $table->string('species');
             $table->string('type')->nullable();
-            $table->enum('gender', ['Female','Male','Genderless','Unknown']);
+            $table->string('gender');
             $table->string('image')->nullable();
             $table->timestamps();
         });
