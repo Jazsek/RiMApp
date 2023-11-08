@@ -8,33 +8,39 @@ Az alkalmazás a Laravel legújabb verizójában íródott dockerizálva. Mivel 
 
 -   Repo pullolása
 
-    -   Sikeres pullolás után szükséges beállítani a megfelelő környezeti változót. Ehhez célszerű lemásolni a repoban lévő **'.env.example'** elnevezésű fájlt, majd módosítani sima **'.env'**-re.
+```
+git clone https://github.com/Jazsek/RiMApp.git
+```
 
--   _(opcionális) Módosítsuk a következő változót a **.env** fájl első sorában erre:_
+-   Sikeres pullolás után szükséges beállítani a megfelelő környezeti változót. Ehhez célszerű lemásolni a repoban lévő **'.env.example'** elnevezésű fájlt, majd módosítani sima **'.env'**-re.
+
+-   Terminálba fel kell nyitni azt a mappát, ahova klónoztuk a repot. Ha a klónozás is terminállal történt, akkor elég egyszerűen csak belenavigálni a 'cd' parancssal.
+
+-   A mappában be kell állítani a Laravel sailt. Ehhez a Laravel oldalán található [dokumentációt](https://laravel.com/docs/10.x/sail#installing-sail-into-existing-applications) ajánlom megtekintésre. Előfordulhat, hogy az install elhasal, mert a filament miatt kell az 'ext-intl'. A parancssorban látható, hogy a composer parancsot ki kell egészíteni a '--ignor...' kezdetű paranccsal.
+
+-   Sikeres telepítés után generálnunk kell egy app key-t
 
 ```
-APP_NAME=RiMApp
+php artisan key:generate
 ```
 
 -   Indítsuk el a docker containert. A gyökérkönyvtárban állva adjuk ki az indításhoz szükséges parancsot. (Én a -d parancsal szoktam kiadni, hogy tovább tudjam használni ugyan azt a terminál ablakot)
 
 ```
 ./vendor/bin/sail up -d
+
+VAGY
+
+docker-compose up -d
 ```
 
--   Indítás után lépjünk át a docker termináljába. A lentebb kiemelt parancsokat már ebben a terminálban adjuk ki.
+-   Indítás után lépjünk át a sail container termináljába (Sail-8.2/app).
 
 ```
 ./vendor/bin/sail bash
 ```
 
--   Telepítsük fel a szükséges packegeket. A lentebbi parancsot az alkalmazás gyökérkönyvtárában állva a terminálban adjuk ki
-
-```
-composer install
-```
-
--   Szintén az alkalmazás gyökérkönyvtárában állva futassuk le a migrációkat. Mivel az admin felület eléréshez szükségünk van egy felhasználóra, így célszerű a migrációkkal együtt az adatbázis seedereket is futtatni. Ez létre fog hozni nekünk egy admin felhasználót.
+-   Futassuk le a migrációkat. Mivel az admin felület eléréshez szükségünk van egy felhasználóra, így célszerű a migrációkkal együtt az adatbázis seedereket is futtatni. Ez létre fog hozni nekünk egy admin felhasználót.
 
 ```php
 /**
@@ -54,7 +60,7 @@ php artisan migrate --seed
 php artisan make:filament-user
 ```
 
-A [localhost](localhost) url-en keresztül már el is érhetjük az alkalmazást. A root URL azonnal átirányít az admin bejelentkező panelra.
+A [localhost](http://localhost) url-en keresztül már el is érhetjük az alkalmazást. A root URL azonnal átirányít az admin bejelentkező panelra. Bejelentkezni a seeder által létrehozott profillal lehet, vagy a make:filament-user parancs által létrehozottal.
 
 ## Felület és funkciók
 
@@ -64,11 +70,11 @@ A [localhost](localhost) url-en keresztül már el is érhetjük az alkalmazást
 
 ### Characters
 
--   Az összes karakter listája tekinthető itt meg.
+-   Az összes karakter listája tekinthető itt meg. Módosítás esetén látható a karakterekhez tartozó epizódok listája. Ez könnyedén módosítható, társítható, vagy éppen leválasztható a karakterről. Új létrehozására is van lehetőség.
 
 ### Episodes
 
--   Az összes epizód listája tekinthető itt meg. Ha egy adott sorra kattintunk a táblázatban, akkor a módosítás oldal töltődik be, ahol alul egy táblázatban megtekinthető a részhez tartozó összes karakter. A táblázat a specifikációnak megfelelően lett beállítva.
+-   Az összes epizód listája tekinthető itt meg. Funkcionalitás tekintetében majdnem ugyan az mint a karakterek oldal, csak éppen fordítva. Itt kapott helyet az api szinkronizáló gomb is.
 
 ## Funkciók
 
@@ -123,4 +129,6 @@ class CharactersRelationManager extends RelationManager {}
 
 Mivel nem volt különösebb kritérum és tiltás, így bátran mertem használni a filamentPhp-t. Amennyiben ez esetleg probléma lenne, akkor bármikor készen állok megvalósítani ezt a projektet a filamentphp nélkül is. Számomra ez a megoldás gyorsabb megvalósítást tett lehetővé. Remélem a tudásom, és a gondolkodásom ebből a verzióból is teljesen jól megállapítható.
 
-Pár szóban azért felvázolnám a gondolatmenetem, ha csak sima laravel verziót használtam volna. A model felépítése ugyan úgy nézne ki, mint a mostani példában. Létrehoznék 1-1 controllert a karakterek és az epizódok számára. Ugyan úgy létrehoznék egy gombot, amin keresztül meg tudom hívni az api kéréseket, és hasonló módon dolgoznám fel az adatokat, mint most. Természetesen a szükséges route-ot beállítanám a web.php fájlban. A létrehozott controller fájlokba írnék egy index függvényt, ami renderelne egy bladet a megfelelő változókkal. A változókat a blade-nek a compact függvény segítségével küldeném tovább. A szükséges változót a with függvénnyel együtt kérném le, hogy elkerüljem az n+1 problámát.
+Pár szóban azért felvázolnám a gondolatmenetem, ha csak sima laravel verziót használtam volna. A model felépítése ugyan úgy nézne ki, mint a mostani példában. Létrehoznék 1-1 controllert a karakterek és az epizódok számára. Ugyan úgy létrehoznék egy gombot, amin keresztül meg tudom hívni az api kéréseket, és hasonló módon dolgoznám fel az adatokat, mint most. Természetesen a szükséges route-ot beállítanám a web.php fájlban. A létrehozott controller fájlokba írnék egy index függvényt, ami renderelne egy bladet a megfelelő változókkal. Valószínűleg itt a CRUD műveletek megírását kihagynám. Ha esetleg erre is szükség lenne akkor persze a controllert resourceként hoznám létre, és a web.php-ba is így húznám be. Külön requestbe validálnám az adatokat az áttekinthetőség miatt. A változókat a blade-nek a compact függvény segítségével küldeném tovább. A szükséges változót a with függvénnyel együtt kérném le, hogy elkerüljem az n+1 problámát.
+
+Végszóként pedig nagyon szépen köszönöm a lehetőséget az állásra, és ha esetleg nem túl nagy fáradtság, akkor utólag szívesen fogadok pár megjegyzést / észrevételt, hogy tudjam merre is hibáztam, vagy éppen a jövbőben mire kellene jobban odafigyelnem!
